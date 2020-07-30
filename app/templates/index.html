@@ -1,0 +1,33 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<center>
+<div class="jumbotron bg-light">
+	<h3>Последние статьи</h3>
+	<table class="table table-hover">
+	<thead>
+		<tr>
+			<th scope="col">Id</th>
+			<th scope="col">Title</th>
+			<th scope="col">Date</th>
+			<th scope="col">Author</th>
+		</tr>
+	</thead>
+		<tbody>
+		<div id="last 30 posts">
+                
+		{% for post in last30 %}
+			<tr> 
+				<td scope="row">{{post[0]}}</td>
+				<th><a href="/post/{{post[0]}}/">{{post[2]}}</th>
+				<td>{{post[1]}}</td>
+				<td>{{post[4]}}</td>
+			</tr>
+		{% endfor %}
+		</div> 
+	</table>
+</div>
+</center>       
+{% endblock %}

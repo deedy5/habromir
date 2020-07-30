@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+		<div class="jumbotron bg-light">
+		<div class="header">
+                <p><class="time">{{ date }} <class="author"> | {{ post[4] }}</p>
+
+                {% if post[6] == 1 %}
+                    <mark>Tutorial</mark> <br>
+                {% endif %}
+
+                <i class="comments"></i> comments:{{ post[9] }} |
+                <i class="rating"></i> rating: {{ post[8] }} |
+                <i class="views"></i> views: {{ post[8] }}
+        </div>
+			
+		<div class="title">
+			<h2><p>{{ post[2]|safe }}</h2></p>
+		</div>
+		<div class="content">
+			<p>{{ post[3]|safe }}</p>
+		</div>
+		<br>
+			<strong><i class="fas fa-tags"></i> Теги:</strong> {{ post[10] }}
+        <br>
+		</div>
+		
+		<script>
+        // Загрузка изображений
+        (async () => {
+            for (let node of document.getElementsByTagName('img')) {
+                await new Promise(res => {
+                    if (node.dataset.src !== undefined){
+                        node.src = node.dataset.src;
+                        node.onload = () => res();
+                    }
+
+                })
+            }
+        })();
+		
+		$(document).on('click', '.spoiler_title', function (e) {
+		e.preventDefault();
+		$(this).toggleClass('active');
+		$(this).parent().find('.spoiler_text').first().slideToggle(300);
+		});		
+		</script>
+		
+{% endblock %}
+

@@ -2,7 +2,7 @@
 Зеркало Хабра (habr.com)
 
 База sqlite3 без комментариев по состоянию на июль 2020
-https://mega.nz/file/nwM2HCSQ#YsupTufeNoMTH_TgirQndDbnLCFLIeQzHGiNvXsDUnQ
+[Link: mega.nz](https://mega.nz/file/nwM2HCSQ#YsupTufeNoMTH_TgirQndDbnLCFLIeQzHGiNvXsDUnQ)
 
 
 Парсер работает через Tor, в файл torrc необходимо добавить порты и хешированный пароль

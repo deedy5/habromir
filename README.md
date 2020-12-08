@@ -5,7 +5,7 @@
 [Link: mega.nz](https://mega.nz/file/nwM2HCSQ#YsupTufeNoMTH_TgirQndDbnLCFLIeQzHGiNvXsDUnQ)
 
 
-Парсер работает через Tor, в файл torrc необходимо добавить порты и хешированный пароль
+Парсер асинхронный и работает через Tor, в файл torrc необходимо добавить порты и хешированный пароль
 для stem (tor.exe --hash-password PASSWORD):
 ```
 ControlPort 9051

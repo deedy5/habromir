@@ -1,69 +1,38 @@
 import json
-import asyncio
 import sqlite3
-import time
-from random import uniform, choice
-from collections import deque
-import aiohttp
-from aiohttp_socks import ProxyConnector
-from stem import Signal
-from stem.control import Controller
+from time import sleep
+import requests
 
-async def tor_new_ip():
-    with Controller.from_port(port = 9051) as controller:
-        controller.authenticate(password = "Unhashed_Password")
-        controller.signal(Signal.NEWNYM)
-##        print(controller.is_authenticated())
-##        ip_api_list = ['https://api.my-ip.io/ip', 'https://api.ipify.org', 'https://ifconfig.me/ip', 
-##                       'https://httpbin.org/ip', 'https://icanhazip.com/', 'https://ipinfo.io/ip',
-##                       'https://wtfismyip.com/text', 'https://checkip.amazonaws.com/', 
-##                       'https://bot.whatismyipaddress.com', 'https://whoer.net/ip',]
-##        ip = await fetch(choice(ip_api_list))
-##        print(f'Tor NEWNYM === ip: {ip}')
+S = requests.Session()
+S.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0",})
 
-async def fetch(url):
-    sleeptime = uniform(0, 2)
-    await asyncio.sleep(sleeptime)
-    for _ in range(5):
+DELAY = 0.5
+
+def get_url(url):
+    while True:
+        sleep(DELAY)
         try:
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0',
-                       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                       'Accept-Language': 'en-US,en;q=0.5',
-                       'Accept-Encoding': 'gzip, deflate, br',
-                       'Connection': 'keep-alive',
-                       'Upgrade-Insecure-Requests': '1',}
-            rproxy = proxies[0]
-            proxies.rotate()            
-            connector = ProxyConnector.from_url(rproxy, rdns = True)
-            async with aiohttp.request('get', url, connector=connector, headers=headers) as response:   
-                r = await response.text()                
-                print(f'{response.status} {url} {rproxy} {sleeptime:.2f}')
-                if response.status == 200:
-                    pass                 
-                else:
-                    r = response.status
-                await connector.close()                
-                return r
+            resp = S.get(url, timeout=10)
+            print(resp.status_code, resp.elapsed, resp.url)
+            if resp.status_code in (200, 403, 404):          
+                return resp
+            print(f'ERROR {resp.status_code}')
+            sleep(3)
         except:
-            print('Error, wait... and repeat')
-            await tor_new_ip()
-            await asyncio.sleep(3)
-            continue    
-    return 'Error'
+            print('ERROR')
+            sleep(3)
 
-async def parse_habr_json(id):
-    url = f'https://m.habr.com/kek/v2/articles/{id}/?fl=ru&hl=ru'
-    page = await fetch(url)
-    if page == 403:        
-        return ((id, 403, 403, 403, 403, 403, 403, 403, 403, 403, 403))
-    if page == 404:        
-        return ((id, 404, 404, 404, 404, 404, 404, 404, 404, 404, 404))
+def parse_habr_json(id):
+    url = f'https://habr.com/kek/v2/articles/{id}/?fl=ru&hl=ru'
+    page = get_url(url)
+    if page.status_code in (403, 404):             
+        return None
     else:
-        data = json.loads(page)    
+        data = json.loads(page.content)
         timestamp = data['timePublished']
         title = data['titleHtml']
         content = data['textHtml']    
-        author = data['author']['login']
+        author = data['author']['alias']
         lang = data['lang']
         is_tutorial = 1 if len(data['postLabels']) > 0 else 0
         rating = data['statistics']['score']
@@ -80,19 +49,16 @@ def save_sqlite(results):
                         content TEXT, author TEXT, lang TEXT, is_tutorial INTEGER, rating INTEGER, views INTEGER,
                         comments INTEGER, tags TEXT)''')
         conn.executemany('''insert into habr values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', results)
-    conn.close()
-    print(f'SQLite3 commit {len(results)} pages. Time: {time.ctime()}')
+        conn.executescript('PRAGMA optimize;')
+    print(f'SQLite3 commit {len(results)} pages')
 
-async def main():    
-    while start < end:    
-        tasks = [asyncio.create_task(parse_habr_json(start + i)) for  i in range(step)]     
-        results = await asyncio.gather(*tasks)
-        save_sqlite(results)
-        await tor_new_ip()
-        start += step
-        time.sleep(2)
-
-if __name__ == '__main__':
-    start, end, step = 512000, 513000, 10
-    proxies = deque(['socks5://127.0.0.1:9000', 'socks5://127.0.0.1:9001', 'socks5://127.0.0.1:9002',])    
-    asyncio.run(main())
+if __name__ == '__main__': 
+    start, end = 1, 583950
+    results = []
+    for  i in range(1, 583950+1):
+        r = parse_habr_json(i)
+        if r:
+            results.append(r)
+        if i % 10 == 0:
+            save_sqlite(results)
+            results.clear()

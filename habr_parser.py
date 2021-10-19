@@ -57,7 +57,7 @@ if __name__ == '__main__':
     results = []
     for  i in range(1, 583950+1):
         r = parse_habr_json(i)
-        if r:
+        if r.result():
             results.append(r)
         if i % 10 == 0:
             save_sqlite(results)

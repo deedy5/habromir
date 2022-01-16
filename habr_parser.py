@@ -4,7 +4,7 @@ from time import sleep
 import requests
 
 S = requests.Session()
-S.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0",})
+S.headers.update({"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0",})
 
 DELAY = 0.5
 
@@ -53,9 +53,9 @@ def save_sqlite(results):
     print(f'SQLite3 commit {len(results)} pages')
 
 if __name__ == '__main__': 
-    start, end = 1, 583950
+    start, end = 1, 646000
     results = []
-    for  i in range(1, 583950+1):
+    for  i in range(start, end+1):
         r = parse_habr_json(i)
         if r:
             results.append(r)

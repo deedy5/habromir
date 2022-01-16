@@ -13,7 +13,7 @@ def get_url(url):
         sleep(DELAY)
         try:
             resp = S.get(url, timeout=10)
-            print(resp.status_code, resp.elapsed, resp.url)
+            print(resp.status_code, resp.elapsed.total_seconds(), resp.url)
             if resp.status_code in (200, 403, 404):          
                 return resp
             print(f'ERROR {resp.status_code}')

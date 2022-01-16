@@ -4,7 +4,7 @@ from time import sleep
 import requests
 
 S = requests.Session()
-S.headers.update({"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0",})
+S.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0",})
 
 DELAY = 0.5
 
